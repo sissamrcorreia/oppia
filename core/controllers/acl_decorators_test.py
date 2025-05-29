@@ -6478,7 +6478,7 @@ class EditQuestionDecoratorTests(test_utils.GenericTestBase):
         self.assertEqual(response['error'], error_msg)
         self.logout()
 
-    def test_topic_manager_cannott_edit_question_from_deleted_topic(
+    def test_topic_manager_cannot_edit_question_from_deleted_topic(
             self) -> None:
         topic_services.delete_topic(self.owner_id, 'other_topic')
         self.login(self.user_a_email)

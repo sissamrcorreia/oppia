@@ -380,6 +380,9 @@ URLS = [
         r'/questionadminrolehandler',
         admin.QuestionAdminRoleHandler),
     get_redirect_route(
+        r'/questioncoordinatorrolehandler',
+        admin.QuestionCoordinatorRoleHandler),
+    get_redirect_route(
         r'/adminsuperadminhandler', admin.AdminSuperAdminPrivilegesHandler),
     get_redirect_route(
         r'/admintopicscsvdownloadhandler',

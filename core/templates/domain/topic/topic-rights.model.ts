@@ -42,12 +42,12 @@ export class TopicRights {
     this._canEditQuestion = canEditQuestion;
   }
 
-  canEditQuestion(): boolean {
-    return this._canEditQuestion;
-  }
-
   canEditTopic(): boolean {
     return this._canEditTopic;
+  }
+
+  canEditQuestion(): boolean {
+    return this._canEditQuestion;
   }
 
   isPublished(): boolean {

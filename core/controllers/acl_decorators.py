@@ -2876,7 +2876,7 @@ def can_edit_topic(
 
 
 def can_edit_question(
-    handler: Callable[..., _GenericHandlerFunctionReturnType]
+        handler: Callable[..., _GenericHandlerFunctionReturnType]
 ) -> Callable[..., _GenericHandlerFunctionReturnType]:
     """Decorator to check whether the user can edit given question.
 
@@ -2892,7 +2892,7 @@ def can_edit_question(
     # arguments with different types.
     @functools.wraps(handler)
     def test_can_edit(
-        self: _SelfBaseHandlerType, question_id: str, **kwargs: Any
+            self: _SelfBaseHandlerType, question_id: str, **kwargs: Any
     ) -> _GenericHandlerFunctionReturnType:
         """Checks whether the user can edit the given question.
 
@@ -2918,7 +2918,6 @@ def can_edit_question(
             raise self.NotFoundException
         if role_services.ACTION_EDIT_ANY_QUESTION in self.user.actions:
             return handler(self, question_id, **kwargs)
-            
         if (role_services.ACTION_EDIT_QUESTION_IN_MANAGED_TOPIC
                 in self.user.actions):
             skills = question_services.get_skills_linked_to_question(
@@ -2933,12 +2932,12 @@ def can_edit_question(
                     for skill_id in topic.get_all_skill_ids():
                         if skill_id in skill_ids:
                             return handler(self, question_id, **kwargs)
-        
             raise self.UnauthorizedUserException(
-                'You do not have credentials to edit this question.')
-        
+                '%s does not have enough rights to edit the question.'
+                % self.user_id)
         raise self.UnauthorizedUserException(
-            'You do not have credentials to edit this question.')
+            '%s does not have enough rights to edit the question.'
+            % self.user_id)
 
     return test_can_edit
 
@@ -3036,7 +3035,7 @@ def can_view_question_editor(
 
 
 def can_delete_question(
-    handler: Callable[..., _GenericHandlerFunctionReturnType]
+        handler: Callable[..., _GenericHandlerFunctionReturnType]
 ) -> Callable[..., _GenericHandlerFunctionReturnType]:
     """Decorator to check whether the user can delete a question.
 
@@ -3052,7 +3051,7 @@ def can_delete_question(
     # arguments with different types.
     @functools.wraps(handler)
     def test_can_delete_question(
-        self: _SelfBaseHandlerType, question_id: str, **kwargs: Any
+            self: _SelfBaseHandlerType, question_id: str, **kwargs: Any
     ) -> _GenericHandlerFunctionReturnType:
         """Checks whether the user can delete a given question.
 
@@ -3071,18 +3070,14 @@ def can_delete_question(
         if not self.user_id:
             raise self.NotLoggedInException
 
-        user_actions_info = user_services.get_user_actions_info(self.user_id)
-
-        if (role_services.ACTION_DELETE_ANY_QUESTION in
-                user_actions_info.actions):
+        if role_services.ACTION_DELETE_ANY_QUESTION in self.user.actions:
             return handler(self, question_id, **kwargs)
-        if (role_services.ACTION_DELETE_QUESTION_IN_MANAGED_TOPIC in
-                user_actions_info.actions):
-            return can_edit_topic(handler)(self, question_id, **kwargs)
-        else:
-            raise self.UnauthorizedUserException(
-                '%s does not have enough rights to delete the'
-                ' question.' % self.user_id)
+        if (role_services.ACTION_DELETE_QUESTION_IN_MANAGED_TOPIC
+                in self.user.actions):
+            return can_edit_question(handler)(self, question_id, **kwargs)
+        raise self.UnauthorizedUserException(
+            '%s does not have enough rights to delete the question.'
+            % self.user_id)
 
     return test_can_delete_question
 
